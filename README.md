@@ -151,11 +151,6 @@ Current verification:
 11 passed in 0.93s
 ```
 
-## Demo Artifacts
-
-- `OUTPUT.md` contains verified command output from the current workspace.
-- `demo_video.mp4` is a short visual walkthrough of the CLI workflow and sample task configuration.
-
 ## Notes
 
 - Live generation requires `OPENAI_API_KEY`.
