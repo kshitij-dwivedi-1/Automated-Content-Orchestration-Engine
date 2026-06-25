@@ -1,0 +1,2 @@
+[console_scripts]
+content-engine = content_engine.main:app

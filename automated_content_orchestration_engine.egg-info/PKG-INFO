@@ -1,0 +1,98 @@
+Metadata-Version: 2.4
+Name: automated-content-orchestration-engine
+Version: 0.1.0
+Summary: Async Python service for SEO content generation, optimization, scheduling, publishing, and alerting.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: openai>=1.35.0
+Requires-Dist: aiohttp>=3.9.5
+Requires-Dist: aiosqlite>=0.20.0
+Requires-Dist: aiosmtplib>=3.0.2
+Requires-Dist: apscheduler>=3.10.4
+Requires-Dist: pydantic-settings>=2.3.4
+Requires-Dist: spacy>=3.7.5
+Requires-Dist: nltk>=3.8.1
+Requires-Dist: typer>=0.12.3
+Requires-Dist: rich>=13.7.1
+Requires-Dist: questionary>=2.0.1
+Requires-Dist: structlog>=24.2.0
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: PyYAML>=6.0.1
+Provides-Extra: dev
+Requires-Dist: pytest>=8.2.2; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.23.7; extra == "dev"
+
+# Automated Content Orchestration Engine
+
+Production-oriented async Python service for generating SEO-focused content, optimizing it, scheduling high-volume daily work, publishing to REST APIs, and alerting on failures.
+
+## Features
+
+- Async OpenAI content generation with retry and fallback model logic.
+- SEO optimization with keyword density, heading checks, and readability scoring.
+- Pipeline stages: generate, SEO optimize, validate, publish, notify.
+- Async worker pool using `asyncio.Queue`.
+- APScheduler integration with `tasks.yaml` hot reload.
+- WordPress, Twitter/X, and LinkedIn publishers with HTTP error and 429 retry handling.
+- Slack and SMTP alerts within the failure path.
+- SQLite task persistence via `aiosqlite`.
+- Typer CLI plus Rich/Questionary configuration UI.
+
+## Setup
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+Create a `.env` file with the credentials you need:
+
+```env
+OPENAI_API_KEY=sk-...
+FALLBACK_MODEL=gpt-3.5-turbo
+MAX_RETRIES=3
+RETRY_DELAY_SECONDS=1
+WORDPRESS_URL=https://example.com
+WORDPRESS_USER=admin
+WORDPRESS_APP_PASSWORD=...
+TWITTER_BEARER_TOKEN=...
+LINKEDIN_ACCESS_TOKEN=...
+LINKEDIN_AUTHOR_URN=urn:li:person:...
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+ALERT_EMAIL=ops@example.com
+SMTP_CONFIG__HOST=smtp.example.com
+SMTP_CONFIG__PORT=587
+SMTP_CONFIG__USERNAME=alerts@example.com
+SMTP_CONFIG__PASSWORD=...
+SMTP_CONFIG__SENDER=alerts@example.com
+```
+
+## CLI
+
+```powershell
+python -m content_engine.main run
+python -m content_engine.main add-task
+python -m content_engine.main list-tasks
+python -m content_engine.main history --limit 20
+python -m content_engine.main metrics
+```
+
+## Scheduling
+
+Tasks live in `tasks.yaml`. Supported schedule formats:
+
+- `interval:hours=24`
+- `cron:hour=9,minute=0`
+- ISO datetime such as `2026-06-25T09:00:00`
+
+The scheduler checks `tasks.yaml` every 10 seconds and reloads changed tasks without a process restart.
+
+## Tests
+
+```powershell
+pytest
+```
+
+The tests use injected fakes, so they do not require real OpenAI or platform API credentials.
+
